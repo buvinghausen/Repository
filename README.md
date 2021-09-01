@@ -1,2 +1,2 @@
 # Repository
-Generic repository support for MongDB &amp; EntityFrameworkCore
+Generic repository support for MongoDB &amp; EntityFrameworkCore
