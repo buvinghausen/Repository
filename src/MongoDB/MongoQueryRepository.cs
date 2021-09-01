@@ -58,7 +58,8 @@ public abstract class MongoQueryRepository<T> : IQueryRepository<T> where T : cl
 		where TChild : T =>
 		Query.OfType<TChild>().Where(filter).Select(projection).FirstAsync(cancellationToken);
 
-	public Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
+	public Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> filter,
+		CancellationToken cancellationToken = default) =>
 		Query.FirstOrDefaultAsync(filter, cancellationToken);
 
 	public Task<TChild?> FirstOrDefaultAsync<TChild>(Expression<Func<TChild, bool>> filter,
@@ -91,16 +92,20 @@ public abstract class MongoQueryRepository<T> : IQueryRepository<T> where T : cl
 		where TChild : T =>
 		Query.OfType<TChild>().Where(filter).Select(projection).SingleAsync(cancellationToken);
 
-	public Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
+	public Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> filter,
+		CancellationToken cancellationToken = default) =>
 		Query.SingleOrDefaultAsync(filter, cancellationToken);
 
-	public Task<TChild?> SingleOrDefaultAsync<TChild>(Expression<Func<TChild, bool>> filter, CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<TChild?> SingleOrDefaultAsync<TChild>(Expression<Func<TChild, bool>> filter,
+		CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().SingleOrDefaultAsync(filter, cancellationToken);
 
-	public Task<TProjection?> SingleOrDefaultAsync<TProjection>(Expression<Func<T, bool>> filter, Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
+	public Task<TProjection?> SingleOrDefaultAsync<TProjection>(Expression<Func<T, bool>> filter,
+		Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
 		Query.Where(filter).Select(projection).SingleOrDefaultAsync(cancellationToken);
 
-	public Task<TProjection?> SingleOrDefaultAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection,
+	public Task<TProjection?> SingleOrDefaultAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
+		Expression<Func<TChild, TProjection>> projection,
 		CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(filter).Select(projection).FirstOrDefaultAsync(cancellationToken);
 

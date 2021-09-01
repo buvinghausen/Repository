@@ -67,8 +67,10 @@ public abstract class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, I
 		(await MongoProject<TChild, TProjection>(Query.OfType<TChild>().Where(filter)).ToListAsync(cancellationToken))
 		.ToDictionary(keySelector, valueSelector);
 
-	public async Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, int count, int page = 1, CancellationToken cancellationToken = default) =>
-		await MongoProject<T, TProjection>(Query.Where(filter)).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken);
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, int count,
+		int page = 1, CancellationToken cancellationToken = default) =>
+		await MongoProject<T, TProjection>(Query.Where(filter)).Take(count).Skip((page - 1) * count)
+			.ToListAsync(cancellationToken);
 
 	public async Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
 		Expression<Func<TChild, bool>> filter, int count, int page = 1, CancellationToken cancellationToken = default)
