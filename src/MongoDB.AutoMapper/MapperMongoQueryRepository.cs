@@ -13,11 +13,11 @@ using Repository.Abstractions.AutoMapper;
 namespace Repository.MongoDB.AutoMapper;
 // The Mongo driver still hasn't enabled nullability
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-public class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, IMappedQueryRepository<T> where T : class
+public abstract class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, IMappedQueryRepository<T> where T : class
 {
 	private readonly IConfigurationProvider _mapper;
 
-	public MapperMongoQueryRepository(IMongoCollection<T> collection, IMapper mapper) : base(collection)
+	protected MapperMongoQueryRepository(IMongoCollection<T> collection, IMapper mapper) : base(collection)
 	{
 		_mapper = mapper.ConfigurationProvider;
 	}
@@ -66,6 +66,15 @@ public class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, IMappedQue
 		where TChild : T where TKey : notnull =>
 		(await MongoProject<TChild, TProjection>(Query.OfType<TChild>().Where(filter)).ToListAsync(cancellationToken))
 		.ToDictionary(keySelector, valueSelector);
+
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, int count, int page = 1, CancellationToken cancellationToken = default) =>
+		await MongoProject<T, TProjection>(Query.Where(filter)).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken);
+
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
+		Expression<Func<TChild, bool>> filter, int count, int page = 1, CancellationToken cancellationToken = default)
+		where TChild : T =>
+		await MongoProject<TChild, TProjection>(Query.OfType<TChild>().Where(filter)).Take(count)
+			.Skip((page - 1) * count).ToListAsync(cancellationToken);
 
 	// Cast the projection back to IMongoQueryable to continue the operations because Mongo's materialization functions are tied to that interface
 	// ReSharper disable once SuggestBaseTypeForParameter

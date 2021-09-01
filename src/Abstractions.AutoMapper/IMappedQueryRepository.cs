@@ -41,4 +41,10 @@ public interface IMappedQueryRepository<T> : IQueryRepository<T> where T : class
 		Expression<Func<TChild, bool>> filter, Func<TProjection, TKey> keySelector,
 		Func<TProjection, TValue> valueSelector, CancellationToken cancellationToken = default)
 		where TChild : T where TKey : notnull;
+
+	Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, int count, int page = 1,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter, int count,
+		int page = 1, CancellationToken cancellationToken = default) where TChild : T;
 }

@@ -13,9 +13,14 @@ public interface IQueryRepository<T> where T : class
 	Task<bool> AnyAsync<TChild>(Expression<Func<TChild, bool>> filter, CancellationToken cancellationToken = default)
 		where TChild : T;
 
-	Task<long> CountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
+	Task<int> CountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
 
-	Task<long> CountAsync<TChild>(Expression<Func<TChild, bool>> filter, CancellationToken cancellationToken = default)
+	Task<int> CountAsync<TChild>(Expression<Func<TChild, bool>> filter, CancellationToken cancellationToken = default)
+		where TChild : T;
+
+	Task<long> LongCountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
+
+	Task<long> LongCountAsync<TChild>(Expression<Func<TChild, bool>> filter, CancellationToken cancellationToken = default)
 		where TChild : T;
 
 	Task<T> FirstAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default);
@@ -75,4 +80,18 @@ public interface IQueryRepository<T> where T : class
 		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection,
 		Func<TProjection, TKey> keySelector, Func<TProjection, TValue> valueSelector,
 		CancellationToken cancellationToken = default) where TChild : T where TKey : notnull;
+
+	Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter, int count, int page = 1,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T;
+
+	Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter,
+		Expression<Func<T, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default);
+
+	Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
+		Expression<Func<TChild, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T;
 }

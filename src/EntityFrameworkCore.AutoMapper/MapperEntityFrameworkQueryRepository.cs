@@ -11,12 +11,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository.EntityFrameworkCore.AutoMapper;
 
-public class MapperEntityFrameworkQueryRepository<T> : EntityFrameworkQueryRepository<T>, IMappedQueryRepository<T>
+public abstract class MapperEntityFrameworkQueryRepository<T> : EntityFrameworkQueryRepository<T>,
+	IMappedQueryRepository<T>
 	where T : class
 {
 	private readonly IConfigurationProvider _mapper;
 
-	public MapperEntityFrameworkQueryRepository(DbContext context, IMapper mapper) : base(context)
+	protected MapperEntityFrameworkQueryRepository(DbContext context, IMapper mapper) : base(context)
 	{
 		_mapper = mapper.ConfigurationProvider;
 	}
@@ -65,4 +66,16 @@ public class MapperEntityFrameworkQueryRepository<T> : EntityFrameworkQueryRepos
 		where TChild : T where TKey : notnull =>
 		await Query.OfType<TChild>().Where(filter).ProjectTo<TProjection>(_mapper)
 			.ToDictionaryAsync(keySelector, valueSelector, cancellationToken);
+
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, int count,
+		int page = 1,
+		CancellationToken cancellationToken = default) =>
+		await Query.Where(filter).ProjectTo<TProjection>(_mapper).Take(count).Skip((page - 1) * count)
+			.ToListAsync(cancellationToken).ConfigureAwait(false);
+
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
+		Expression<Func<TChild, bool>> filter, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		await Query.OfType<TChild>().Where(filter).ProjectTo<TProjection>(_mapper).Take(count).Skip((page - 1) * count)
+			.ToListAsync(cancellationToken).ConfigureAwait(false);
 }

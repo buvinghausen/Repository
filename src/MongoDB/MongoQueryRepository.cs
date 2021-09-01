@@ -11,11 +11,11 @@ using Repository.Abstractions;
 namespace Repository.MongoDB;
 // The Mongo driver still hasn't enabled nullability
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-public class MongoQueryRepository<T> : IQueryRepository<T> where T : class
+public abstract class MongoQueryRepository<T> : IQueryRepository<T> where T : class
 {
 	protected readonly IMongoQueryable<T> Query;
 
-	public MongoQueryRepository(IMongoCollection<T> collection)
+	protected MongoQueryRepository(IMongoCollection<T> collection)
 	{
 		Query = collection.AsQueryable();
 	}
@@ -27,12 +27,20 @@ public class MongoQueryRepository<T> : IQueryRepository<T> where T : class
 		CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().AnyAsync(filter, cancellationToken);
 
-	public Task<long> CountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
+	public Task<int> CountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
+		Query.CountAsync(filter, cancellationToken);
+
+	public Task<int> CountAsync<TChild>(Expression<Func<TChild, bool>> filter,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().CountAsync(filter, cancellationToken);
+
+	public Task<long> LongCountAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
 		Query.LongCountAsync(filter, cancellationToken);
 
-	public Task<long> CountAsync<TChild>(Expression<Func<TChild, bool>> filter,
+	public Task<long> LongCountAsync<TChild>(Expression<Func<TChild, bool>> filter,
 		CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().LongCountAsync(filter, cancellationToken);
+
 
 	public Task<T> FirstAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
 		Query.FirstAsync(filter, cancellationToken);
@@ -109,5 +117,27 @@ public class MongoQueryRepository<T> : IQueryRepository<T> where T : class
 		CancellationToken cancellationToken = default) where TChild : T where TKey : notnull =>
 		(await Query.OfType<TChild>().Where(filter).Select(projection).ToListAsync(cancellationToken)
 			.ConfigureAwait(false)).ToDictionary(keySelector, valueSelector);
+
+	public async Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		await Query.Where(filter).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken)
+			.ConfigureAwait(false);
+
+	public async Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter, int count,
+		int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
+		await Query.OfType<TChild>().Where(filter).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken)
+			.ConfigureAwait(false);
+
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter,
+		Expression<Func<T, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		await Query.Where(filter).Select(projection).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken)
+			.ConfigureAwait(false);
+
+	public async Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
+		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection, int count,
+		int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
+		await Query.OfType<TChild>().Where(filter).Select(projection).Take(count).Skip((page - 1) * count)
+			.ToListAsync(cancellationToken).ConfigureAwait(false);
 }
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
