@@ -17,7 +17,11 @@ public abstract class MapperEntityFrameworkQueryRepository<T> : EntityFrameworkQ
 {
 	private readonly IConfigurationProvider _mapper;
 
-	protected MapperEntityFrameworkQueryRepository(DbContext context, IMapper mapper) : base(context)
+	protected MapperEntityFrameworkQueryRepository(DbContext context, IMapper mapper) : this(context.Set<T>(), mapper)
+	{
+	}
+
+	protected MapperEntityFrameworkQueryRepository(DbSet<T> set, IMapper mapper) : base(set)
 	{
 		_mapper = mapper.ConfigurationProvider;
 	}

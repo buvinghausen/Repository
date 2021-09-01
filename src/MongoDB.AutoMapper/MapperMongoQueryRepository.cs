@@ -17,7 +17,11 @@ public abstract class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, I
 {
 	private readonly IConfigurationProvider _mapper;
 
-	protected MapperMongoQueryRepository(IMongoCollection<T> collection, IMapper mapper) : base(collection)
+	protected MapperMongoQueryRepository(IMongoCollection<T> collection, IMapper mapper) : this(collection.AsQueryable(), mapper)
+	{
+	}
+
+	protected MapperMongoQueryRepository(IMongoQueryable<T> query, IMapper mapper) : base(query)
 	{
 		_mapper = mapper.ConfigurationProvider;
 	}

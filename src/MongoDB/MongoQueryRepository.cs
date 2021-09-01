@@ -15,9 +15,13 @@ public abstract class MongoQueryRepository<T> : IQueryRepository<T> where T : cl
 {
 	protected readonly IMongoQueryable<T> Query;
 
-	protected MongoQueryRepository(IMongoCollection<T> collection)
+	protected MongoQueryRepository(IMongoCollection<T> collection) : this(collection.AsQueryable())
 	{
-		Query = collection.AsQueryable();
+	}
+
+	protected MongoQueryRepository(IMongoQueryable<T> query)
+	{
+		Query = query;
 	}
 
 	public Task<bool> AnyAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>

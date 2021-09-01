@@ -11,11 +11,15 @@ namespace Repository.EntityFrameworkCore;
 
 public abstract class EntityFrameworkQueryRepository<T> : IQueryRepository<T> where T : class
 {
-	protected readonly IQueryable<T> Query;
+	protected readonly DbSet<T> Query;
 
-	protected EntityFrameworkQueryRepository(DbContext context)
+	protected EntityFrameworkQueryRepository(DbContext context) : this(context.Set<T>())
 	{
-		Query = context.Set<T>();
+	}
+
+	protected EntityFrameworkQueryRepository(DbSet<T> set)
+	{
+		Query = set;
 	}
 
 	public Task<bool> AnyAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
