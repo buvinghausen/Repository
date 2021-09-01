@@ -103,7 +103,6 @@ public class MongoQueryRepository<T> : IQueryRepository<T> where T : class
 		(await Query.Where(filter).Select(projection).ToListAsync(cancellationToken)
 			.ConfigureAwait(false)).ToDictionary(keySelector, valueSelector);
 
-
 	public async Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TChild, TProjection, TKey, TValue>(
 		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection,
 		Func<TProjection, TKey> keySelector, Func<TProjection, TValue> valueSelector,

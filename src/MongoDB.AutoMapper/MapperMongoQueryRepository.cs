@@ -26,7 +26,6 @@ public class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, IMappedQue
 		CancellationToken cancellationToken = default) =>
 		MongoProject<T, TProjection>(Query.Where(filter)).FirstAsync(cancellationToken);
 
-
 	public Task<TProjection> FirstAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
 		CancellationToken cancellationToken = default) where TChild : T =>
 		MongoProject<TChild, TProjection>(Query.OfType<TChild>().Where(filter)).FirstAsync(cancellationToken);
