@@ -69,7 +69,7 @@ public class MapperMongoQueryRepository<T> : MongoQueryRepository<T>, IMappedQue
 
 	// Cast the projection back to IMongoQueryable to continue the operations because Mongo's materialization functions are tied to that interface
 	// ReSharper disable once SuggestBaseTypeForParameter
-	private IMongoQueryable<TDestination> MongoProject<TSource, TDestination>(IMongoQueryable<TSource> query) =>
+	protected IMongoQueryable<TDestination> MongoProject<TSource, TDestination>(IMongoQueryable<TSource> query) =>
 		query.ProjectTo<TDestination>(_mapper) as IMongoQueryable<TDestination> ??
 		throw new InvalidOperationException();
 }
