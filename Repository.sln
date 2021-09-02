@@ -5,15 +5,9 @@ VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.Abstractions", "src\Abstractions\Repository.Abstractions.csproj", "{78F93716-48AA-45CA-B0A7-0658F4E0B533}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.Abstractions.AutoMapper", "src\Abstractions.AutoMapper\Repository.Abstractions.AutoMapper.csproj", "{1ABBB2F2-ED66-443C-ADA5-D4E04133F178}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.EntityFrameworkCore", "src\EntityFrameworkCore\Repository.EntityFrameworkCore.csproj", "{31DD5F9C-C26A-4E25-83A4-AD2A84B8F1E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.EntityFrameworkCore.AutoMapper", "src\EntityFrameworkCore.AutoMapper\Repository.EntityFrameworkCore.AutoMapper.csproj", "{0862BE7C-3DED-402E-85F7-DBD8454D439E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.MongoDB", "src\MongoDB\Repository.MongoDB.csproj", "{DA55B1A5-0206-49DE-B0B7-46C180330360}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.MongoDB.AutoMapper", "src\MongoDB.AutoMapper\Repository.MongoDB.AutoMapper.csproj", "{CD100C0C-8047-4058-83FA-F69839BAD116}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC9ED776-B30D-450D-96F1-AF7C7EC418EC}"
 	ProjectSection(SolutionItems) = preProject
@@ -33,26 +27,14 @@ Global
 		{78F93716-48AA-45CA-B0A7-0658F4E0B533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78F93716-48AA-45CA-B0A7-0658F4E0B533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78F93716-48AA-45CA-B0A7-0658F4E0B533}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1ABBB2F2-ED66-443C-ADA5-D4E04133F178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ABBB2F2-ED66-443C-ADA5-D4E04133F178}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1ABBB2F2-ED66-443C-ADA5-D4E04133F178}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1ABBB2F2-ED66-443C-ADA5-D4E04133F178}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31DD5F9C-C26A-4E25-83A4-AD2A84B8F1E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31DD5F9C-C26A-4E25-83A4-AD2A84B8F1E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31DD5F9C-C26A-4E25-83A4-AD2A84B8F1E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31DD5F9C-C26A-4E25-83A4-AD2A84B8F1E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0862BE7C-3DED-402E-85F7-DBD8454D439E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0862BE7C-3DED-402E-85F7-DBD8454D439E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0862BE7C-3DED-402E-85F7-DBD8454D439E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0862BE7C-3DED-402E-85F7-DBD8454D439E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA55B1A5-0206-49DE-B0B7-46C180330360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA55B1A5-0206-49DE-B0B7-46C180330360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA55B1A5-0206-49DE-B0B7-46C180330360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA55B1A5-0206-49DE-B0B7-46C180330360}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD100C0C-8047-4058-83FA-F69839BAD116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD100C0C-8047-4058-83FA-F69839BAD116}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD100C0C-8047-4058-83FA-F69839BAD116}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD100C0C-8047-4058-83FA-F69839BAD116}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
