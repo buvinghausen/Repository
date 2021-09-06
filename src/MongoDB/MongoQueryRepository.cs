@@ -11,10 +11,10 @@ using Repository.Abstractions;
 namespace Repository.MongoDB;
 // The Mongo driver still hasn't enabled nullability
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-public abstract class MongoQueryRepository<T> : IQueryRepository<T> where T : class
+public abstract class MongoQueryRepository<T> : IDocumentQueryRepository<T> where T : class
 {
 	protected readonly IMongoQueryable<T> Query;
-
+	
 	protected MongoQueryRepository(IMongoCollection<T> collection) : this(collection.AsQueryable())
 	{
 	}
@@ -182,44 +182,170 @@ public abstract class MongoQueryRepository<T> : IQueryRepository<T> where T : cl
 		Query.OfType<TChild>().Select(projection).FirstOrDefaultAsync(cancellationToken);
 
 	public Task<TProjection?> SingleOrDefaultAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
-		Expression<Func<TChild, TProjection>> projection,
-		CancellationToken cancellationToken = default) where TChild : T =>
+		Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default)
+		where TChild : T =>
 		Query.OfType<TChild>().Where(filter).Select(projection).FirstOrDefaultAsync(cancellationToken);
 
-	public async Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TProjection, TKey, TValue>(
+	public Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TProjection, TKey, TValue>(
+		Expression<Func<T, TProjection>> projection, Func<TProjection, TKey> keySelector,
+		Func<TProjection, TValue> valueSelector, CancellationToken cancellationToken = default) where TKey : notnull =>
+		Query.Select(projection).ToDictionaryImpl(keySelector, valueSelector, cancellationToken);
+
+	public Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TProjection, TKey, TValue>(
 		Expression<Func<T, bool>> filter, Expression<Func<T, TProjection>> projection,
 		Func<TProjection, TKey> keySelector, Func<TProjection, TValue> valueSelector,
 		CancellationToken cancellationToken = default) where TKey : notnull =>
-		(await Query.Where(filter).Select(projection).ToListAsync(cancellationToken)
-			.ConfigureAwait(false)).ToDictionary(keySelector, valueSelector);
+		Query.Where(filter).Select(projection).ToDictionaryImpl(keySelector, valueSelector, cancellationToken);
 
-	public async Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TChild, TProjection, TKey, TValue>(
+	public Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TChild, TProjection, TKey, TValue>(
+		Expression<Func<TChild, TProjection>> projection, Func<TProjection, TKey> keySelector,
+		Func<TProjection, TValue> valueSelector, CancellationToken cancellationToken = default)
+		where TChild : T where TKey : notnull =>
+		Query.OfType<TChild>().Select(projection).ToDictionaryImpl(keySelector, valueSelector, cancellationToken);
+
+	public Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryAsync<TChild, TProjection, TKey, TValue>(
 		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection,
 		Func<TProjection, TKey> keySelector, Func<TProjection, TValue> valueSelector,
 		CancellationToken cancellationToken = default) where TChild : T where TKey : notnull =>
-		(await Query.OfType<TChild>().Where(filter).Select(projection).ToListAsync(cancellationToken)
-			.ConfigureAwait(false)).ToDictionary(keySelector, valueSelector);
+		Query.OfType<TChild>().Where(filter).Select(projection)
+			.ToDictionaryImpl(keySelector, valueSelector, cancellationToken);
 
-	public async Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter, int count, int page = 1,
+	public Task<IReadOnlyList<T>> ToListAsync(CancellationToken cancellationToken = default) =>
+		Query.ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter,
 		CancellationToken cancellationToken = default) =>
-		await Query.Where(filter).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken)
-			.ConfigureAwait(false);
+		Query.Where(filter).ToListImpl(cancellationToken);
 
-	public async Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter, int count,
+	public Task<IReadOnlyList<T>> ToListAsync(Order<T> order, CancellationToken cancellationToken = default) =>
+		Query.OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<T>> ToListAsync(int count, int page = 1, CancellationToken cancellationToken = default) =>
+		Query.Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter, Order<T> order,
+		CancellationToken cancellationToken = default) =>
+		Query.Where(filter).OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		Query.Where(filter).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<T>> ToListAsync(Order<T> order, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		Query.Page(count, page).OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<T>> ToListAsync(Expression<Func<T, bool>> filter, Order<T> order, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		Query.Where(filter).Page(count, page).OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(CancellationToken cancellationToken = default)
+		where TChild : T =>
+		Query.OfType<TChild>().ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Where(filter).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Order<T, TChild> order,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter,
+		Order<T, TChild> order, CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Where(filter).OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter, int count,
 		int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
-		await Query.OfType<TChild>().Where(filter).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken)
-			.ConfigureAwait(false);
+		Query.OfType<TChild>().Where(filter).Page(count, page).ToListImpl(cancellationToken);
 
-	public async Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter,
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Order<T, TChild> order, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Page(count, page).OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(Expression<Func<TChild, bool>> filter,
+		Order<T, TChild> order, int count, int page = 1, CancellationToken cancellationToken = default)
+		where TChild : T =>
+		Query.OfType<TChild>().Where(filter).Page(count, page).OrderBy(order).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, TProjection>> projection,
+		CancellationToken cancellationToken = default) =>
+		Query.Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter,
+		Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
+		Query.Where(filter).Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Order<T> order,
+		Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
+		Query.OrderBy(order).Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, TProjection>> projection,
+		int count, int page = 1, CancellationToken cancellationToken = default) =>
+		Query.Select(projection).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, Order<T> order,
+		Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
+		Query.Where(filter).OrderBy(order).Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter,
 		Expression<Func<T, TProjection>> projection, int count, int page = 1,
 		CancellationToken cancellationToken = default) =>
-		await Query.Where(filter).Select(projection).Take(count).Skip((page - 1) * count).ToListAsync(cancellationToken)
-			.ConfigureAwait(false);
+		Query.Where(filter).Select(projection).Page(count, page).ToListImpl(cancellationToken);
 
-	public async Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
-		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection, int count,
-		int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
-		await Query.OfType<TChild>().Where(filter).Select(projection).Take(count).Skip((page - 1) * count)
-			.ToListAsync(cancellationToken).ConfigureAwait(false);
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Order<T> order,
+		Expression<Func<T, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		Query.OrderBy(order).Select(projection).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(Expression<Func<T, bool>> filter, Order<T> order,
+		Expression<Func<T, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) =>
+		Query.Where(filter).OrderBy(order).Select(projection).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
+		Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default)
+		where TChild : T =>
+		Query.OfType<TChild>().Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
+		Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default)
+		where TChild : T =>
+		Query.OfType<TChild>().Where(filter).Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Order<T, TChild> order,
+		Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default)
+		where TChild : T =>
+		Query.OfType<TChild>().OrderBy(order).Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(
+		Expression<Func<TChild, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Select(projection).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
+		Order<T, TChild> order, Expression<Func<TChild, TProjection>> projection,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Where(filter).OrderBy(order).Select(projection).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
+		Expression<Func<TChild, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Where(filter).Select(projection).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Order<T, TChild> order,
+		Expression<Func<TChild, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().OrderBy(order).Select(projection).Page(count, page).ToListImpl(cancellationToken);
+
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(Expression<Func<TChild, bool>> filter,
+		Order<T, TChild> order, Expression<Func<TChild, TProjection>> projection, int count, int page = 1,
+		CancellationToken cancellationToken = default) where TChild : T =>
+		Query.OfType<TChild>().Where(filter).OrderBy(order).Select(projection).Page(count, page)
+			.ToListImpl(cancellationToken);
 }
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
