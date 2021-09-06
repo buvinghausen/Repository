@@ -28,6 +28,7 @@ internal static class MongoQueryExtensions
 	}
 
 	// Helper method simply await the task so the compiler is ok with IReadOnlyDictionary<TKey, TValue> in lieu of Dictionary<TKey, TValue>
+	// While Mongo doesn't support ToDictionary in their IMongoQueryable interface we can just use ToList and ToDictionary together
 	internal static async Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryImpl<TResult, TKey, TValue>(
 		this IMongoQueryable<TResult> query, Func<TResult, TKey> keySelector, Func<TResult, TValue> valueSelector,
 		CancellationToken cancellationToken) where TKey : notnull =>
