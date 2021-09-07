@@ -10,7 +10,8 @@ using Repository.Abstractions;
 namespace Repository.MongoDB;
 
 // This doesn't really need it's own class it could be done inside the base class
-// However the entity framework text search implmentations are so database specific it would require DB specific versions so to follow the paradigm here
+// However the entity framework text search implementations are so database specific (and horrible) it would require DB specific versions
+// so to follow the paradigm of inheriting class here to keep it consistent
 public abstract class MongoTextSearchRepository<T> : MongoQueryRepository<T>, ITextSearchRepository<T> where T : class
 {
 	protected MongoTextSearchRepository(IMongoCollection<T> collection) : base(collection)
