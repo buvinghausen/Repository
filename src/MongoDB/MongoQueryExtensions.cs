@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -25,6 +26,23 @@ internal static class MongoQueryExtensions
 		if (count < 2) throw new ArgumentException($"Please return a single entity for count {count}", nameof(count));
 		if (page < 1) throw new ArgumentException($"Page must be 1 or greater", nameof(page));
 		return page == 1 ? query.Take(count) : query.Take(count).Skip((page - 1) * count);
+	}
+
+	// Helper method to inject the text search filter into the query
+	internal static IMongoQueryable<T> Where<T>(this IMongoQueryable<T> query, string search)
+	{
+		// This must be done outside of the expression tree
+		var filter = Builders<T>.Filter.Text(search);
+		return query.Where(_ => filter.Inject());
+	}
+
+	// Helper method to inject a text search filter constrained by an additional filter predicate
+	internal static IMongoQueryable<T> Where<T>(this IMongoQueryable<T> query, string search, Expression<Func<T, bool>> predicate)
+	{
+		// This must be done outside of the expression tree
+		var builder = Builders<T>.Filter;
+		var filter = builder.Text(search) & builder.Where(predicate);
+		return query.Where(_ => filter.Inject());
 	}
 
 	// Helper method simply await the task so the compiler is ok with IReadOnlyDictionary<TKey, TValue> in lieu of Dictionary<TKey, TValue>
