@@ -9,8 +9,6 @@ using Repository.Abstractions;
 
 namespace Repository.EntityFrameworkCore;
 
-// Older entity framework versions haven't enabled nullability
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
 public abstract class RelationalQueryRepository<T> : IRelationalQueryRepository<T> where T : class
 {
 	protected readonly DbSet<T> Query;
@@ -348,4 +346,3 @@ public abstract class RelationalQueryRepository<T> : IRelationalQueryRepository<
 		Query.OfType<TChild>().Where(filter).OrderBy(order).Select(projection).Page(count, page)
 			.ToListImpl(cancellationToken);
 }
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.

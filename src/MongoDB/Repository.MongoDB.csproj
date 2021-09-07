@@ -4,6 +4,7 @@
     <TargetFrameworks>net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
+    <NoWarn>CS8619</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

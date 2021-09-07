@@ -9,8 +9,7 @@ using MongoDB.Driver.Linq;
 using Repository.Abstractions;
 
 namespace Repository.MongoDB;
-// The Mongo driver still hasn't enabled nullability
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+
 public abstract class MongoQueryRepository<T> : IDocumentQueryRepository<T> where T : class
 {
 	protected readonly IMongoQueryable<T> Query;
@@ -348,4 +347,3 @@ public abstract class MongoQueryRepository<T> : IDocumentQueryRepository<T> wher
 		Query.OfType<TChild>().Where(filter).OrderBy(order).Select(projection).Page(count, page)
 			.ToListImpl(cancellationToken);
 }
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
