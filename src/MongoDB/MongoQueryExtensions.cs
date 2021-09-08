@@ -20,6 +20,14 @@ internal static class MongoQueryExtensions
 		where T : class where TChild : T =>
 		order.Apply<IOrderedMongoQueryable<TChild>>(query);
 
+
+	// Tracking: https://jira.mongodb.org/browse/CSHARP-3839
+	//internal static IOrderedMongoQueryable<T> OrderByTextScore<T>(this IMongoQueryable<T> query)
+	//{
+	//	var sort = Builders<T>.Sort.MetaTextScore("textScore");
+	//	return query.OrderBy(sort);
+	//}
+
 	// Helper method to keep the take & skip logic in the same place
 	internal static IMongoQueryable<T> Page<T>(this IMongoQueryable<T> query, int count, int page)
 	{

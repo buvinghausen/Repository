@@ -24,6 +24,7 @@ public abstract class MongoTextSearchRepository<T> : MongoQueryRepository<T>, IT
 
 	// TODO: implement text score sorting
 	// https://docs.mongodb.com/manual/reference/operator/aggregation/sort/#std-label-sort-pipeline-metadata
+	// Tracking: https://jira.mongodb.org/browse/CSHARP-3839
 	public Task<IReadOnlyList<T>> ToListAsync(string search, CancellationToken cancellationToken = default) =>
 		Query.Where(search).ToListImpl(cancellationToken);
 
