@@ -14,8 +14,7 @@ internal static class RelationalQueryExtensions
 	internal static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> query, Order<T> order) where T : class =>
 		order.Apply(query);
 
-	internal static IOrderedQueryable<TChild> OrderBy<T, TChild>(this IQueryable<TChild> query, Order<T, TChild> order)
-		where T : class where TChild : T =>
+	internal static IOrderedQueryable<TChild> OrderBy<T, TChild>(this IQueryable<TChild> query, Order<T, TChild> order) where T : class where TChild : T =>
 		order.Apply(query);
 
 	// Helper method to keep the take & skip logic in the same place
@@ -27,13 +26,10 @@ internal static class RelationalQueryExtensions
 	}
 
 	// Helper method simply await the task so the compiler is ok with IReadOnlyDictionary<TKey, TValue> in lieu of Dictionary<TKey, TValue>
-	internal static async Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryImpl<TResult, TKey, TValue>(
-		this IQueryable<TResult> query, Func<TResult, TKey> keySelector, Func<TResult, TValue> valueSelector,
-		CancellationToken cancellationToken) where TKey : notnull =>
+	internal static async Task<IReadOnlyDictionary<TKey, TValue>> ToDictionaryImpl<TResult, TKey, TValue>(this IQueryable<TResult> query, Func<TResult, TKey> keySelector, Func<TResult, TValue> valueSelector, CancellationToken cancellationToken) where TKey : notnull =>
 		await query.ToDictionaryAsync(keySelector, valueSelector, cancellationToken).ConfigureAwait(false);
 
 	// Helper method simply await the task so the compiler is ok with IReadOnlyList<TResult> in lieu of List<TResult>
-	internal static async Task<IReadOnlyList<TResult>> ToListImpl<TResult>(this IQueryable<TResult> query,
-		CancellationToken cancellationToken) =>
+	internal static async Task<IReadOnlyList<TResult>> ToListImpl<TResult>(this IQueryable<TResult> query, CancellationToken cancellationToken) =>
 		await query.ToListAsync(cancellationToken).ConfigureAwait(false);
 }

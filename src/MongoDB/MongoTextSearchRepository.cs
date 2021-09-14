@@ -28,69 +28,48 @@ public abstract class MongoTextSearchRepository<T> : MongoQueryRepository<T>, IT
 	public Task<IReadOnlyList<T>> ToListAsync(string search, CancellationToken cancellationToken = default) =>
 		Query.Where(search).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<T>> ToListAsync(string search, Expression<Func<T, bool>> filter,
-		CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<T>> ToListAsync(string search, Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default) =>
 		Query.Where(search, filter).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<T>> ToListAsync(string search, int count, int page = 1,
-		CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<T>> ToListAsync(string search, int count, int page = 1, CancellationToken cancellationToken = default) =>
 		Query.Where(search).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<T>> ToListAsync(string search, Expression<Func<T, bool>> filter, int count, int page = 1,
-		CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<T>> ToListAsync(string search, Expression<Func<T, bool>> filter, int count, int page = 1, CancellationToken cancellationToken = default) =>
 		Query.Where(search, filter).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, CancellationToken cancellationToken = default)
-		where TChild : T =>
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, Expression<Func<TChild, bool>> filter,
-		CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, Expression<Func<TChild, bool>> filter, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search, filter).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, int count, int page = 1,
-		CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, int count, int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, Expression<Func<TChild, bool>> filter,
-		int count, int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<IReadOnlyList<TChild>> ToListAsync<TChild>(string search, Expression<Func<TChild, bool>> filter, int count, int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search, filter).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search,
-		Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search, Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
 		Query.Where(search).Select(projection).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search, Expression<Func<T, bool>> filter,
-		Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search, Expression<Func<T, bool>> filter, Expression<Func<T, TProjection>> projection, CancellationToken cancellationToken = default) =>
 		Query.Where(search, filter).Select(projection).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search,
-		Expression<Func<T, TProjection>> projection, int count, int page = 1,
-		CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search, Expression<Func<T, TProjection>> projection, int count, int page = 1, CancellationToken cancellationToken = default) =>
 		Query.Where(search).Select(projection).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search, Expression<Func<T, bool>> filter,
-		Expression<Func<T, TProjection>> projection, int count, int page = 1,
-		CancellationToken cancellationToken = default) =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TProjection>(string search, Expression<Func<T, bool>> filter, Expression<Func<T, TProjection>> projection, int count, int page = 1, CancellationToken cancellationToken = default) =>
 		Query.Where(search, filter).Select(projection).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search,
-		Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default)
-		where TChild : T =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search, Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search).Select(projection).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search,
-		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection,
-		CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search, Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search, filter).Select(projection).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search,
-		Expression<Func<TChild, TProjection>> projection, int count, int page = 1,
-		CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search, Expression<Func<TChild, TProjection>> projection, int count, int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search).Select(projection).Page(count, page).ToListImpl(cancellationToken);
 
-	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search,
-		Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection, int count,
-		int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
+	public Task<IReadOnlyList<TProjection>> ToListAsync<TChild, TProjection>(string search, Expression<Func<TChild, bool>> filter, Expression<Func<TChild, TProjection>> projection, int count, int page = 1, CancellationToken cancellationToken = default) where TChild : T =>
 		Query.OfType<TChild>().Where(search, filter).Select(projection).Page(count, page).ToListImpl(cancellationToken);
 }
