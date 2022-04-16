@@ -4,3 +4,7 @@
 public interface IRelationalQueryRepository<T> : IQueryRepository<T> where T : class
 {
 }
+
+public interface IRelationalQueryRepository<TParent, TChild> : IQueryRepository<TChild> where TParent : class where TChild : class, TParent
+{
+}
