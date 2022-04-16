@@ -5,6 +5,6 @@ public interface IDocumentQueryRepository<T> : IQueryRepository<T> where T : cla
 {
 }
 
-public interface IDocumentQueryRepository<TParent, TChild> : IQueryRepository<TChild> where TParent : class where TChild : class, TParent
+public interface IDocumentQueryRepository<TParent, TChild> : IQueryRepository<TParent, TChild> where TParent : class where TChild : class, TParent
 {
 }
