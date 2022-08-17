@@ -7,10 +7,12 @@ namespace Repository.MongoDB;
 
 public abstract class MongoQueryRepositoryBase<T> : IDocumentQueryRepository<T> where T : class
 {
+	protected readonly IMongoCollection<T> Collection;
 	protected readonly IMongoQueryable<T> Query;
 
 	protected MongoQueryRepositoryBase(IMongoCollection<T> collection)
 	{
+		Collection = collection;
 		Query = collection.AsQueryable();
 	}
 

@@ -9,9 +9,6 @@ internal static class RelationalQueryExtensions
 	internal static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> query, Order<T> order) where T : class =>
 		order.Apply(query);
 
-	internal static IOrderedQueryable<TChild> OrderBy<T, TChild>(this IQueryable<TChild> query, Order<T, TChild> order) where T : class where TChild : T =>
-		order.Apply(query);
-
 	// Helper method to keep the take & skip logic in the same place
 	internal static IQueryable<T> Page<T>(this IQueryable<T> query, int count, int page)
 	{

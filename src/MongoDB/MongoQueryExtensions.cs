@@ -11,9 +11,6 @@ internal static class MongoQueryExtensions
 	internal static IOrderedMongoQueryable<T> OrderBy<T>(this IMongoQueryable<T> query, Order<T> order) where T : class =>
 		order.Apply<IOrderedMongoQueryable<T>>(query);
 
-	internal static IOrderedMongoQueryable<TChild> OrderBy<T, TChild>(this IMongoQueryable<TChild> query, Order<T, TChild> order) where T : class where TChild : T =>
-		order.Apply<IOrderedMongoQueryable<TChild>>(query);
-
 	// Tracking: https://jira.mongodb.org/browse/CSHARP-3839
 	//internal static IOrderedMongoQueryable<T> OrderByTextScore<T>(this IMongoQueryable<T> query)
 	//{
